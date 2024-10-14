@@ -12,15 +12,44 @@ def get_all_orders():
                 o.id,
                 o.metal_id,
                 o.size_id,
-                o.style_id
+                o.style_id,
+                m.metal,
+                m.price metal_price,
+                s.size,
+                s.price size_price,
+                st.style,
+                st.price style_price
             FROM `Orders` o
+            JOIN Metals m ON o.metal_id = m.id
+            JOIN Sizes s ON o.size_id = s.id
+            JOIN Styles st ON o.style_id = st.id
         """
         )
         query_results = db_cursor.fetchall()
 
         orders = []
         for row in query_results:
-            orders.append(dict(row))
+            metal = {
+                'metal': row['metal'],
+                'price': row['metal_price']
+            }
+            size = {
+                'size': row['size'],
+                'price': row['size_price']
+            }
+            style = {
+                'style': row['style'],
+                'price': row['style_price']
+            }
+            order = {
+                'metal_id': row['metal_id'],
+                'metal': metal,
+                'size_id': row['size_id'],
+                'size': size,
+                'style_id': row['style_id'],
+                'style': style
+            }
+            orders.append(order)
         
         serialized_orders = json.dumps(orders)
 
@@ -36,18 +65,47 @@ def get_single_order(pk):
             o.id,
             o.metal_id,
             o.size_id,
-            o.style_id
+            o.style_id,
+            m.metal,
+            m.price metal_price,
+            s.size,
+            s.price size_price,
+            st.style,
+            st.price style_price                                         
         FROM `Orders` o
+        JOIN Metals m ON o.metal_id = m.id
+        JOIN Sizes s ON o.size_id = s.id
+        JOIN Styles st ON o.style_id = st.id                                   
         WHERE o.id = ?  
         """, (pk,))
         
-        query_results = db_cursor.fetchone()
+        query_result = db_cursor.fetchone()
 
-        if query_results is None:
+        if query_result is None:
             return None
 
-        dictionary_version_of_object = dict(query_results)
-        serialized_order = json.dumps(dictionary_version_of_object)
+        metal = {
+            'metal': query_result['metal'],
+            'price': query_result['metal_price']
+        }
+        size = {
+            'size': query_result['size'],
+            'price': query_result['size_price']
+        }
+        style = {
+            'style': query_result['style'],
+            'price': query_result['style_price']
+        }
+        order = {
+            'metal_id': query_result['metal_id'],
+            'metal': metal,
+            'size_id': query_result['size_id'],
+            'size': size,
+            'style_id': query_result['style_id'],
+            'style': style
+        }
+        
+        serialized_order = json.dumps(order)
 
     return serialized_order
 
