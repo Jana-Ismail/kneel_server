@@ -3,6 +3,7 @@ from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
 from views import get_all_orders, get_single_order, create_order, delete_order
+from views import get_all_metals, get_single_metal, create_metal, delete_metal
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for kneel diamonds"""
@@ -20,6 +21,14 @@ class JSONServer(HandleRequests):
             
             response_body = get_all_orders()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        if url["requested_resource"] == "metals":
+            if url["pk"] != 0:
+                response_body = get_single_metal(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            
+            response_body = get_all_metals()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
         
     def do_POST(self):
         url = self.parse_url(self.path)
@@ -33,6 +42,11 @@ class JSONServer(HandleRequests):
             successfully_created = create_order(request_body)
             if successfully_created:
                 return self.response(request_body, status.HTTP_201_SUCCESS_CREATED.value)
+
+        if url["requested_resource"] == "metals":
+            successfully_created = create_metal(request_body)
+            if successfully_created:
+                return self.response(request_body, status.HTTP_201_SUCCESS_CREATED.value)
         
         else:
             return self.response("Bad request data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
@@ -42,6 +56,11 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "orders":
             successfully_deleted = delete_order(url["pk"])
+            if successfully_deleted:
+                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+            
+        if url["requested_resource"] == "metals":
+            successfully_deleted = delete_metal(url["pk"])
             if successfully_deleted:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
             
