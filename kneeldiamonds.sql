@@ -41,3 +41,25 @@ CREATE TABLE `Orders`
     FOREIGN KEY('size_id') REFERENCES `Sizes`(`id`),
     FOREIGN KEY('style_id') REFERENCES `Styles`(`id`)
 );
+
+INSERT INTO `Metals` (metal, price) VALUES ("Sterling Silver", 409.95);
+INSERT INTO `Metals` (metal, price) VALUES ("14K Gold", 909.95);
+INSERT INTO `Metals` (metal, price) VALUES ("24K Gold", 1009.95);
+INSERT INTO `Metals` (metal, price) VALUES ("Platinum", 2009.95);
+INSERT INTO `Metals` (metal, price) VALUES ("Palladium", 3009.95);
+
+INSERT INTO `Sizes` (size, price) VALUES (0.5, 409.95);
+INSERT INTO `Sizes` (size, price) VALUES (0.75, 909.95);
+INSERT INTO `Sizes` (size, price) VALUES (1, 1009.95);
+INSERT INTO `Sizes` (size, price) VALUES (1.5, 2009.95);
+INSERT INTO `Sizes` (size, price) VALUES (2, 3009.95);
+
+INSERT INTO `Styles` (style, price) VALUES ("Sterling Silver", 409.95);
+INSERT INTO `Styles` (style, price) VALUES ("14K Gold", 909.95);
+INSERT INTO `Styles` (style, price) VALUES ("24K Gold", 1009.95);
+
+INSERT INTO `Orders` (metal_id, size_id, style_id) VALUES (1, 5, 3);
+INSERT INTO `Orders` (metal_id, size_id, style_id) VALUES (2, 5, 2);
+INSERT INTO `Orders` (metal_id, size_id, style_id) VALUES (3, 4, 1);
+INSERT INTO `Orders` (metal_id, size_id, style_id) VALUES (4, 2, 2);
+INSERT INTO `Orders` (metal_id, size_id, style_id) VALUES (5, 3, 3);
