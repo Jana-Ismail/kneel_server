@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import get_all_orders, get_single_order, create_order
+from views import get_all_orders, get_single_order, create_order, delete_order
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for kneel diamonds"""
@@ -32,12 +32,21 @@ class JSONServer(HandleRequests):
         if url["requested_resource"] == "orders":
             successfully_created = create_order(request_body)
             if successfully_created:
-                return self.response("", status.HTTP_201_SUCCESS_CREATED.value)
+                return self.response(request_body, status.HTTP_201_SUCCESS_CREATED.value)
         
         else:
             return self.response("Bad request data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value)
         
+    def do_DELETE(self):
+        url = self.parse_url(self.path)
 
+        if url["requested_resource"] == "orders":
+            successfully_deleted = delete_order(url["pk"])
+            if successfully_deleted:
+                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+            
+        else:
+            return self.response("Resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
 #
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
