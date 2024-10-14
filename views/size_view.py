@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-def get_all_metals():
+def get_all_sizes():
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -9,91 +9,91 @@ def get_all_metals():
         db_cursor.execute(
         """ 
             SELECT
-                m.id,
-                m.metal,
-                m.price
-            FROM Metals m
+                s.id,
+                s.size,
+                s.price
+            FROM Sizes s
         """
         )
         query_results = db_cursor.fetchall()
 
-        metals = []
+        sizes = []
         for row in query_results:
-            metals.append(dict(row))
+            sizes.append(dict(row))
         
-        serialized_metals = json.dumps(metals)
+        serialized_sizes = json.dumps(sizes)
 
-        return serialized_metals
+        return serialized_sizes
 
-def get_single_metal(pk):
+def get_single_size(pk):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
         SELECT
-            m.id,
-            m.metal,
-            m.price
-        FROM Metals m
-        WHERE m.id = ?  
+            s.id,
+            s.size,
+            s.price
+        FROM sizes s
+        WHERE s.id = ?  
         """, (pk,))
         
-        query_results = db_cursor.fetchone()
+        query_result = db_cursor.fetchone()
 
-        if query_results is None:
+        if query_result is None:
             return None
+        
+        dictionary_version_of_object = dict(query_result)
+        serialized_size = json.dumps(dictionary_version_of_object)
 
-        dictionary_version_of_object = dict(query_results)
-        serialized_metal = json.dumps(dictionary_version_of_object)
+    return serialized_size
 
-    return serialized_metal
-
-def create_metal(metal_data):
+def create_size(size_data):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         db_cursor = conn.cursor()
 
         db_cursor.execute(
             """
-            INSERT INTO `metals` (metal, price)
+            INSERT INTO `sizes` (size, price)
             VALUES (?, ?)
 
             """, 
-            (metal_data["metal"], metal_data["price"])
+            (size_data["size"], size_data["price"])
         )
 
         rows_affected = db_cursor.rowcount
 
         return True if rows_affected > 0 else False
     
-def delete_metal(pk):
+def delete_size(pk):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
     
         db_cursor.execute(
             """
-            DELETE FROM `metals` 
+            DELETE FROM Sizes 
             WHERE id = ?
             """, (pk,))
         
         num_rows_deleted = db_cursor.rowcount
 
-        return True if num_rows_deleted > 0 else False
+        return True if num_rows_deleted > 0 else None
     
-def update_metal(pk, metal_data):
+def update_size(pk, size_data):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute(""" 
-            UPDATE Metals  
+            UPDATE Sizes  
                 SET 
-                    metal = ?,
+                    size = ?,
                     price = ?
             WHERE id = ?
         """,
-        (metal_data['metal'], metal_data['price'], pk,)
+        (size_data['size'], size_data['price'], pk,)
         )
 
         rows_affected = db_cursor.rowcount
