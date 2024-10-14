@@ -3,7 +3,7 @@ from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
 from views import get_all_orders, get_single_order, create_order, delete_order
-from views import get_all_metals, get_single_metal, create_metal, delete_metal
+from views import get_all_metals, get_single_metal, create_metal, delete_metal, update_metal
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for kneel diamonds"""
@@ -66,6 +66,22 @@ class JSONServer(HandleRequests):
             
         else:
             return self.response("Resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+    
+    def do_PUT(self):
+        url = self.parse_url(self.path)
+
+        content_len = int(self.headers.get('content-length', 0))
+        request_body = self.rfile.read(content_len)
+        request_body = json.loads(request_body)
+
+        if url["requested_resource"] == "metals":
+            successfully_updated = update_metal(url["pk"], request_body)
+            if successfully_updated:
+                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+            
+        else:
+            return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+        
 #
 # THE CODE BELOW THIS LINE IS NOT IMPORTANT FOR REACHING YOUR LEARNING OBJECTIVES
 #
