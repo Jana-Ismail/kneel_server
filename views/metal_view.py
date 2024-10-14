@@ -77,3 +77,22 @@ def delete_metal(pk):
         num_rows_deleted = db_cursor.rowcount
 
         return True if num_rows_deleted > 0 else False
+    
+def update_metal(pk, metal_data):
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(""" 
+            UPDATE Metals  
+                SET 
+                    metal = ?,
+                    price = ?
+            WHERE id = ?
+        """,
+        (metal_data['metal'], metal_data['price'], pk,)
+        )
+
+        rows_affected = db_cursor.rowcount
+
+        return True if rows_affected > 0 else False
