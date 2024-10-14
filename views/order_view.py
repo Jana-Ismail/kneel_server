@@ -43,6 +43,9 @@ def get_single_order(pk):
         
         query_results = db_cursor.fetchone()
 
+        if query_results is None:
+            return None
+
         dictionary_version_of_object = dict(query_results)
         serialized_order = json.dumps(dictionary_version_of_object)
 

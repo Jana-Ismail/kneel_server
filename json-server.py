@@ -4,6 +4,7 @@ from nss_handler import HandleRequests, status
 
 from views import get_all_orders, get_single_order, create_order, delete_order
 from views import get_all_metals, get_single_metal, create_metal, delete_metal, update_metal
+from views import get_all_sizes, get_single_size, create_size, delete_size, update_size
 
 class JSONServer(HandleRequests):
     """Server class to handle incoming HTTP requests for kneel diamonds"""
@@ -17,18 +18,38 @@ class JSONServer(HandleRequests):
         if url["requested_resource"] == "orders":
             if url["pk"] != 0:
                 response_body = get_single_order(url["pk"])
-                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                if response_body:
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                else:
+                    return self.response("Requested resource not found.", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
             
             response_body = get_all_orders()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-        if url["requested_resource"] == "metals":
+        elif url["requested_resource"] == "metals":
             if url["pk"] != 0:
                 response_body = get_single_metal(url["pk"])
-                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                if response_body:
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                else:
+                    return self.response("Requested resource not found.", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
             
             response_body = get_all_metals()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "sizes":
+            if url["pk"] != 0:
+                response_body = get_single_size(url["pk"])
+                if response_body:
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                else:
+                    return self.response("Requested resource not found.", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+            
+            response_body = get_all_sizes()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        else:
+            return self.response("Requested resource not found.", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
         
     def do_POST(self):
         url = self.parse_url(self.path)
@@ -43,8 +64,13 @@ class JSONServer(HandleRequests):
             if successfully_created:
                 return self.response(request_body, status.HTTP_201_SUCCESS_CREATED.value)
 
-        if url["requested_resource"] == "metals":
+        elif url["requested_resource"] == "metals":
             successfully_created = create_metal(request_body)
+            if successfully_created:
+                return self.response(request_body, status.HTTP_201_SUCCESS_CREATED.value)
+        
+        elif url["requested_resource"] == "sizes":
+            successfully_created = create_size(request_body)
             if successfully_created:
                 return self.response(request_body, status.HTTP_201_SUCCESS_CREATED.value)
         
@@ -59,11 +85,22 @@ class JSONServer(HandleRequests):
             if successfully_deleted:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
             
-        if url["requested_resource"] == "metals":
+            return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+            
+        elif url["requested_resource"] == "metals":
             successfully_deleted = delete_metal(url["pk"])
             if successfully_deleted:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
             
+            return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+
+        elif url["requested_resource"] == "sizes":
+            successfully_deleted = delete_size(url["pk"])
+            if successfully_deleted:
+                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+
+            return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+
         else:
             return self.response("Resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
     
@@ -76,6 +113,11 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "metals":
             successfully_updated = update_metal(url["pk"], request_body)
+            if successfully_updated:
+                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+            
+        elif url["requested_resource"] == "sizes":
+            successfully_updated = update_size(url["pk"], request_body)
             if successfully_updated:
                 return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
             
