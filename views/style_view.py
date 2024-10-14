@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-def get_all_sizes():
+def get_all_styles():
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -10,22 +10,22 @@ def get_all_sizes():
         """ 
             SELECT
                 s.id,
-                s.size,
+                s.style,
                 s.price
-            FROM Sizes s
+            FROM Styles s
         """
         )
         query_results = db_cursor.fetchall()
 
-        sizes = []
+        styles = []
         for row in query_results:
-            sizes.append(dict(row))
+            styles.append(dict(row))
         
-        serialized_sizes = json.dumps(sizes)
+        serialized_styles = json.dumps(styles)
 
-        return serialized_sizes
+        return serialized_styles
 
-def get_single_size(pk):
+def get_single_style(pk):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -33,9 +33,9 @@ def get_single_size(pk):
         db_cursor.execute("""
         SELECT
             s.id,
-            s.size,
+            s.style,
             s.price
-        FROM sizes s
+        FROM styles s
         WHERE s.id = ?  
         """, (pk,))
         
@@ -45,35 +45,35 @@ def get_single_size(pk):
             return None
         
         dictionary_version_of_object = dict(query_result)
-        serialized_size = json.dumps(dictionary_version_of_object)
+        serialized_style = json.dumps(dictionary_version_of_object)
 
-    return serialized_size
+    return serialized_style
 
-def create_size(size_data):
+def create_style(style_data):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         db_cursor = conn.cursor()
 
         db_cursor.execute(
             """
-            INSERT INTO `sizes` (size, price)
+            INSERT INTO Styles (style, price)
             VALUES (?, ?)
 
             """, 
-            (size_data["size"], size_data["price"])
+            (style_data["style"], style_data["price"])
         )
 
         rows_affected = db_cursor.rowcount
 
         return True if rows_affected > 0 else False
     
-def delete_size(pk):
+def delete_style(pk):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
     
         db_cursor.execute(
             """
-            DELETE FROM Sizes 
+            DELETE FROM Styles 
             WHERE id = ?
             """, (pk,))
         
@@ -81,19 +81,19 @@ def delete_size(pk):
 
         return True if num_rows_deleted > 0 else None
     
-def update_size(pk, size_data):
+def update_style(pk, style_data):
     with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute(""" 
-            UPDATE Sizes  
+            UPDATE Styles  
                 SET 
-                    size = ?,
+                    style = ?,
                     price = ?
             WHERE id = ?
         """,
-        (size_data['size'], size_data['price'], pk,)
+        (style_data['style'], style_data['price'], pk,)
         )
 
         rows_affected = db_cursor.rowcount
